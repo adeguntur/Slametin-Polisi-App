@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/EleganTech-.ttf")
+                .setDefaultFontPath("fonts/Roboto-Light.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         setContentView(R.layout.activity_main);
@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         final MaterialEditText edtEmail = login_layout.findViewById(R.id.edtEmail);
         final MaterialEditText edtPassword = login_layout.findViewById(R.id.edtPassword);
 
+
         dialog.setView(login_layout);
 
         //set Button
@@ -189,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(AuthResult authResult) {
                                 waitingDialog.dismiss();
-                                startActivity(new Intent(MainActivity.this, Welcome.class));
+                                startActivity(new Intent(MainActivity.this, DriverHome.class));
                                 finish();
                             }
                         })

@@ -1,6 +1,5 @@
 package com.example.ade.slametinpolisiapp1;
 
-import android.Manifest;
 import android.animation.ValueAnimator;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -10,13 +9,20 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ade.slametinpolisiapp1.Common.Common;
@@ -28,13 +34,10 @@ import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -69,14 +72,19 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Welcome extends FragmentActivity implements OnMapReadyCallback,
+public class DriverHome extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
-
     public Handler handler = new Handler();
 
     private GoogleMap mMap;
+
+    private final int red = 0xff0000ff;
+    private final int ORANGE = 0xFFFF3300;
+
+
 
     //Play Service
     private static final int MY_PERMISSION_REQUEST_CODE = 7000;
@@ -177,8 +185,11 @@ public class Welcome extends FragmentActivity implements OnMapReadyCallback,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        setContentView(R.layout.activity_driver_home);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+// Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -202,6 +213,8 @@ public class Welcome extends FragmentActivity implements OnMapReadyCallback,
         });
 
         //init view
+
+        final TextView tampilText = (TextView) findViewById(R.id.status);
         location_switch = (MaterialAnimatedSwitch) findViewById(R.id.location_switch);
         location_switch.setOnCheckedChangeListener(new MaterialAnimatedSwitch.OnCheckedChangeListener() {
             @Override
@@ -212,8 +225,8 @@ public class Welcome extends FragmentActivity implements OnMapReadyCallback,
 
                     startLocationUpdates();
                     displayLocation();
-                    Snackbar.make(mapFragment.getView(), "You are online", Snackbar.LENGTH_SHORT)
-                            .show();
+                    tampilText.setTextColor(red);
+                    tampilText.setText("You are online");
                 } else {
 
                     FirebaseDatabase.getInstance().goOffline();
@@ -222,36 +235,14 @@ public class Welcome extends FragmentActivity implements OnMapReadyCallback,
                     mCurrent.remove();
                     mMap.clear();
                     handler.removeCallbacks(drawPathRunnable);
-                    Snackbar.make(mapFragment.getView(), "You are offline", Snackbar.LENGTH_SHORT)
-                            .show();
+                    tampilText.setTextColor(Color.parseColor("#59baf3"));
+                    tampilText.setText("You are offline");
                 }
             }
         });
 
         polyLineList = new ArrayList<>();
-        //Places Api
-        place = (PlaceAutocompleteFragment)getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-        place.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                if(location_switch.isChecked())
-                {
-                    destination = place.getAddress().toString();
-                    destination = destination.replace(" ","+");
 
-                    getDirection();
-                }
-                else
-                {
-                    Toast.makeText(Welcome.this,"Please change your status to ONLINE",Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onError(Status status) {
-                Toast.makeText(Welcome.this, ""+status.toString(),Toast.LENGTH_SHORT).show();
-            }
-        });
 
         //geo fire
 
@@ -263,6 +254,68 @@ public class Welcome extends FragmentActivity implements OnMapReadyCallback,
         mService = Common.getGoogleAPI();
 
         updateFirebaseToken();
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.driver_home, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_profile ){
+            // Handle the camera action
+        } else if (id == R.id.nav_help) {
+
+        } else if (id == R.id.nav_about) {
+
+        } else if (id == R.id.nav_setting) {
+
+        } else if (id == R.id.nav_sign_out) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     private void updateFirebaseToken() {
@@ -271,7 +324,7 @@ public class Welcome extends FragmentActivity implements OnMapReadyCallback,
 
         Token token = new Token(FirebaseInstanceId.getInstance().getToken());
         tokens.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                    .setValue(token);
+                .setValue(token);
     }
 
     private void getDirection() {
@@ -363,7 +416,7 @@ public class Welcome extends FragmentActivity implements OnMapReadyCallback,
 
                         @Override
                         public void onFailure(Call<String> call, Throwable t) {
-                            Toast.makeText(Welcome.this,""+t.getMessage(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DriverHome.this,""+t.getMessage(),Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -426,23 +479,23 @@ public class Welcome extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void setUpLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(this,new String[]{
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION
             },MY_PERMISSION_REQUEST_CODE);
         }
         else
         {
-          if(checkPlayServices())
-          {
-              buildGoogleApiClient();
-              createLocationRequest();
-              if(location_switch.isChecked())
-                  displayLocation();
-          }
+            if(checkPlayServices())
+            {
+                buildGoogleApiClient();
+                createLocationRequest();
+                if(location_switch.isChecked())
+                    displayLocation();
+            }
         }
     }
 
@@ -479,16 +532,16 @@ public class Welcome extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void stopLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-               ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
     private void displayLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-               ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         Common.mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
