@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Slametin Polisi App</string>
+    <string name="title_activity_welcome">Map</string>
+    <string name="google_direction_api">AIzaSyCD1XSg66JilItFjz4-dToC-YFjFN-3PNI</string>
+    <string name="title_activity_driver_tracking">Map</string>
+
+</resources>
