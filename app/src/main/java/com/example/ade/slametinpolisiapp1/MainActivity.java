@@ -1,10 +1,15 @@
 package com.example.ade.slametinpolisiapp1;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +18,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ade.slametinpolisiapp1.Common.Common;
 import com.example.ade.slametinpolisiapp1.Model.User;
@@ -24,18 +31,41 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import dmax.dialog.SpotsDialog;
+import io.paperdb.Paper;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnSignIn, btnRegister;
-    RelativeLayout rootLayout;
+    Button btnSignIn;
+    TextView btnRegister;
+    ConstraintLayout rootLayout;
 
     FirebaseAuth auth;
     FirebaseDatabase db;
@@ -44,6 +74,20 @@ public class MainActivity extends AppCompatActivity {
     TextView txt_forgot_pwd;
 
     private final static int PERMISSION = 1000;
+
+    FirebaseStorage storage;
+    StorageReference storageReference;
+
+    public static final int CONNECTION_TIMEOUT = 10000;
+    public static final int READ_TIMEOUT = 15000;
+
+    EditText etEmail, etPassword, etRePassword, etNoHP;
+    Button btnDaftar;
+
+    public static String TAG_SHAREDPREFERENCES = "kebutsemalam";
+    public static String idUser = "";
+    SharedPreferences sharedPreferences;
+    StrictMode.ThreadPolicy policy;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -59,15 +103,22 @@ public class MainActivity extends AppCompatActivity {
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         setContentView(R.layout.activity_main);
+
+        //init paper db
+        Paper.init(this);
+
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
+
         //inisiasi firebase
         auth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance();
         users = db.getReference(Common.user_driver_tbl);
 
         //inisiasi tampilan
+        rootLayout = (ConstraintLayout) findViewById(R.id.rootLayout);
         btnSignIn = (Button) findViewById(R.id.btnSignIn);
-        btnRegister = (Button) findViewById(R.id.btnRegister);
-        rootLayout = (RelativeLayout) findViewById(R.id.rootLayout);
+        btnRegister = (TextView) findViewById(R.id.btnRegister);
         txt_forgot_pwd = (TextView) findViewById(R.id.txt_forgot_password);
         txt_forgot_pwd.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -92,6 +143,61 @@ public class MainActivity extends AppCompatActivity {
                 showLoginDialog();
             }
         });
+
+        //
+        String user = Paper.book().read(Common.user_field);
+        String pwd = Paper.book().read(Common.pwd_field);
+        if (user != null && pwd != null) {
+            if (!TextUtils.isEmpty(user) &&
+                    !TextUtils.isEmpty(pwd)) {
+                autoLogin(user, pwd);
+            }
+        }
+    }
+
+    private void autoLogin(String user, String pwd) {
+
+
+        final android.app.AlertDialog waitingDialog = new SpotsDialog(MainActivity.this);
+        waitingDialog.show();
+
+        //login
+        auth.signInWithEmailAndPassword(user,pwd)
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                    @Override
+                    public void onSuccess(AuthResult authResult) {
+                        waitingDialog.dismiss();
+
+                        FirebaseDatabase.getInstance().getReference(Common.user_driver_tbl)
+                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        Common.currentUser = dataSnapshot.getValue(User.class);
+                                        startActivity(new Intent(MainActivity.this, DriverHome.class));
+                                        waitingDialog.dismiss();
+                                        finish();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        waitingDialog.dismiss();
+                        Snackbar.make(rootLayout, "Failed" + e.getMessage(), Snackbar.LENGTH_SHORT)
+                                .show();
+
+                        btnSignIn.setEnabled(true);
+                    }
+                });
     }
 
     private void showDioalogForgotPwd() {
@@ -126,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
                         dialog.dismiss();
                         waitingDialog.dismiss();
 
-                        Snackbar.make(rootLayout, ""+e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(rootLayout, "" + e.getMessage(), Snackbar.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -190,8 +296,28 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(AuthResult authResult) {
                                 waitingDialog.dismiss();
-                                startActivity(new Intent(MainActivity.this, DriverHome.class));
-                                finish();
+
+                                FirebaseDatabase.getInstance().getReference(Common.user_driver_tbl)
+                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                                Paper.book().write(Common.user_field,edtEmail.getText().toString());
+                                                Paper.book().write(Common.pwd_field,edtPassword.getText().toString());
+
+                                                Common.currentUser = dataSnapshot.getValue(User.class);
+                                                startActivity(new Intent(MainActivity.this, DriverHome.class));
+                                                finish();
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -219,7 +345,6 @@ public class MainActivity extends AppCompatActivity {
     private void showRegisterDialog() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("REGISTER ");
-        dialog.setMessage("Please use email to register");
 
         LayoutInflater inflater = LayoutInflater.from(this);
         View register_layout = inflater.inflate(R.layout.layout_register, null);
@@ -228,6 +353,16 @@ public class MainActivity extends AppCompatActivity {
         final MaterialEditText edtPassword = register_layout.findViewById(R.id.edtPassword);
         final MaterialEditText edtNama = register_layout.findViewById(R.id.edtNama);
         final MaterialEditText edtPhone = register_layout.findViewById(R.id.edtPhone);
+        final MaterialEditText edtNip = register_layout.findViewById(R.id.edtNIP);
+        final MaterialEditText edtAsal = register_layout.findViewById(R.id.edtAsal);
+        final MaterialEditText edtJabatan = register_layout.findViewById(R.id.edtJabatan);
+        final ImageView image_upload = (ImageView) register_layout.findViewById(R.id.image_upload);
+        image_upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choseImage();
+            }
+        });
 
         dialog.setView(register_layout);
 
@@ -259,6 +394,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
+
                 //Register new users
                 auth.createUserWithEmailAndPassword(edtEmail.getText().toString(), edtPassword.getText().toString())
                         .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
@@ -270,6 +406,9 @@ public class MainActivity extends AppCompatActivity {
                                 user.setNama(edtNama.getText().toString());
                                 user.setPassword(edtPassword.getText().toString());
                                 user.setPhone(edtPhone.getText().toString());
+                                user.setNip(edtNip.getText().toString());
+                                user.setAsal(edtAsal.getText().toString());
+                                user.setJabatan(edtJabatan.getText().toString());
 
                                 //use email to key
                                 users.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -309,4 +448,201 @@ public class MainActivity extends AppCompatActivity {
 
         dialog.show();
     }
+
+
+    private void choseImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), Common.PICK_IMAGE_REQUEST);
+    }
+
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Common.PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
+            Uri saveUri = data.getData();
+            if (saveUri != null) {
+                final ProgressDialog mDialog = new ProgressDialog(this);
+                mDialog.setMessage("Uploading...");
+                mDialog.show();
+
+                String imageName = UUID.randomUUID().toString();
+                final StorageReference imageFolder = storageReference.child("images/" + imageName);
+                imageFolder.putFile(saveUri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                mDialog.dismiss();
+                                Toast.makeText(MainActivity.this, "Uploaded!", Toast.LENGTH_SHORT).show();
+                                imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        Map<String, Object> avatarUpdate = new HashMap<>();
+                                        avatarUpdate.put("Foto KK", uri.toString());
+
+                                        DatabaseReference driverInformation = FirebaseDatabase.getInstance().getReference(Common.user_driver_tbl);
+                                        driverInformation.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                                .updateChildren(avatarUpdate)
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful())
+                                                            Toast.makeText(MainActivity.this, "Uploaded !", Toast.LENGTH_SHORT).show();
+                                                        else
+                                                            Toast.makeText(MainActivity.this, "Uploaded Error", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+
+                                    }
+                                });
+                            }
+                        })
+                        .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                                mDialog.setMessage("Uploaded" + progress + "%");
+
+                            }
+                        });
+
+            }
+        }
+    }
+
+    private boolean sendSMSNotif(String nohp, String kode_verif) {
+        boolean status = false;
+        String token = "77175209227a8858b0292c32cf61c7ac";
+        String smsContent = "Terima kasih telah mendaftar di Slametin. Kenyamanan anda adalah Prioritas kami. \nKode verifikasi anda adalah : " + kode_verif;
+        HttpURLConnection conn = null;
+        URL url = null;
+        try {
+            url = new URL("https://api.mainapi.net/smsnotification/1.0.0/messages");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(READ_TIMEOUT);
+            conn.setConnectTimeout(CONNECTION_TIMEOUT);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Authorization", "Bearer " + token);
+            conn.setUseCaches(false);
+
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+
+            Uri.Builder builder = new Uri.Builder()
+                    .appendQueryParameter("msisdn", nohp)
+                    .appendQueryParameter("content", smsContent);
+            String query = builder.build().getEncodedQuery();
+
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            writer.write(query);
+            writer.flush();
+            writer.close();
+            os.close();
+            conn.connect();
+
+            int response_code = conn.getResponseCode();
+
+            if (response_code == HttpURLConnection.HTTP_OK) {
+
+                InputStream input = conn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                StringBuilder result = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+
+                status = true;
+
+            } else {
+                Toast.makeText(getApplicationContext(), "Response Code : " + response_code, Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            status = false;
+        } finally {
+            conn.disconnect();
+        }
+        return status;
+    }
+
+    private boolean sendSMSOTP(String nohp, String kode_verif) {
+        boolean status = false;
+        String token = "77175209227a8858b0292c32cf61c7ac";
+        String digits = "4";
+        HttpURLConnection conn = null;
+        URL url = null;
+        try {
+            url = new URL("https://api.mainapi.net/smsnotification/1.0.0/messages");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(READ_TIMEOUT);
+            conn.setConnectTimeout(CONNECTION_TIMEOUT);
+            conn.setRequestMethod("PUT");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Authorization", "Bearer " + token);
+            conn.setUseCaches(false);
+
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+
+            Uri.Builder builder = new Uri.Builder()
+                    .appendQueryParameter("phoneNum", nohp)
+                    .appendQueryParameter("digits", digits);
+            String query = builder.build().getEncodedQuery();
+
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            writer.write(query);
+            writer.flush();
+            writer.close();
+            os.close();
+            conn.connect();
+
+            int response_code = conn.getResponseCode();
+
+            if (response_code == HttpURLConnection.HTTP_OK) {
+
+                InputStream input = conn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                StringBuilder result = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+
+                status = true;
+
+            } else {
+                Toast.makeText(getApplicationContext(), "Response Code : " + response_code, Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            status = false;
+        } finally {
+            conn.disconnect();
+        }
+        return status;
+    }
+
 }

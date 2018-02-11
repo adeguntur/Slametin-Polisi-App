@@ -15,7 +15,16 @@ import android.widget.Toast;
 
 import com.example.ade.slametinpolisiapp1.Common.Common;
 import com.example.ade.slametinpolisiapp1.Helper.DirectionJSONParser;
+import com.example.ade.slametinpolisiapp1.Model.FCMResponse;
+import com.example.ade.slametinpolisiapp1.Model.Notification;
+import com.example.ade.slametinpolisiapp1.Model.Sender;
+import com.example.ade.slametinpolisiapp1.Model.Token;
+import com.example.ade.slametinpolisiapp1.Remote.IFCMService;
 import com.example.ade.slametinpolisiapp1.Remote.IGoogleAPI;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,6 +43,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,6 +65,8 @@ public class DriverTracking extends FragmentActivity implements OnMapReadyCallba
     private GoogleMap mMap;
     double riderLat,riderLng;
 
+    String customerId;
+
     //Play Service
     private static final int PLAY_SERVICE_RES_REQUEST = 7001;
 
@@ -70,6 +83,10 @@ public class DriverTracking extends FragmentActivity implements OnMapReadyCallba
     private Polyline direction;
 
     IGoogleAPI mService;
+    IFCMService mFCMService;
+
+    GeoFire geoFire;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,10 +100,12 @@ public class DriverTracking extends FragmentActivity implements OnMapReadyCallba
         {
             riderLat = getIntent().getDoubleExtra("lat",-1.0);
             riderLng = getIntent().getDoubleExtra("lng",-1.0);
+            customerId = getIntent().getStringExtra("customerId");
 
         }
 
         mService = Common.getGoogleAPI();
+        mFCMService = Common.getFCMService();
 
         setUpLocation();
     }
@@ -143,6 +162,55 @@ public class DriverTracking extends FragmentActivity implements OnMapReadyCallba
         .fillColor(0x220000FF)
         .strokeWidth(5.0f));
 
+        geoFire = new GeoFire(FirebaseDatabase.getInstance().getReference(Common.driver_tbl));
+        GeoQuery geoQuery =  geoFire.queryAtLocation(new GeoLocation(riderLat,riderLng),0.01f);
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                sendArrivedNotification(customerId);
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void sendArrivedNotification(String customerId) {
+        Token token = new Token(customerId);
+        Notification notification = new Notification("Telah Tiba ! ",String.format("Polisi Telah Tiba dilokasi Anda",Common.currentUser.getNama()));
+        Sender sender = new Sender(token.getToken(),notification);
+
+        mFCMService.sendMessage(sender).enqueue(new Callback<FCMResponse>() {
+            @Override
+            public void onResponse(Call<FCMResponse> call, Response<FCMResponse> response) {
+                if(response.body().success != 1)
+                {
+                    Toast.makeText(DriverTracking.this,"Failed",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FCMResponse> call, Throwable t) {
+
+            }
+        });
     }
 
     private void displayLocation() {

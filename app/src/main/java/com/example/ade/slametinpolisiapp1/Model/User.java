@@ -5,16 +5,9 @@ package com.example.ade.slametinpolisiapp1.Model;
  */
 
 public class User {
-    private String email,password,nama,phone;
+    private String email,password,nama,phone,AvatarUrl,Nip,Asal,Jabatan;
 
     public User() {
-    }
-
-    public User(String email, String password, String nama, String phone) {
-        this.email = email;
-        this.password = password;
-        this.nama = nama;
-        this.phone = phone;
     }
 
     public String getEmail() {
@@ -47,5 +40,50 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getAvatarUrl() {
+        return AvatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        AvatarUrl = avatarUrl;
+    }
+
+    public String getNip() {
+        return Nip;
+    }
+
+    public void setNip(String nip) {
+        Nip = nip;
+    }
+
+    public String getAsal() {
+        return Asal;
+    }
+
+    public void setAsal(String asal) {
+        Asal = asal;
+    }
+
+    public String getJabatan() {
+        return Jabatan;
+    }
+
+    public void setJabatan(String jabatan) {
+        Jabatan = jabatan;
+    }
+
+    public User(String email, String password, String nama, String phone, String avatarUrl, String nip, String asal, String jabatan) {
+        this.email = email;
+        this.password = password;
+        this.nama = nama;
+        this.phone = phone;
+        AvatarUrl = avatarUrl;
+        Nip = nip;
+        Asal = asal;
+        Jabatan = jabatan;
+
+
     }
 }
