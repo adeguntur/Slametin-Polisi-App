@@ -5,7 +5,7 @@ dan didukung oleh Polrestabes Surabaya. Point Pembeda aplikasi slametin dengan a
 dalam bahaya kepada Handphone polisi,bukan mengirim sinyal kepada operator lalu operator mengirimkan anggota ke TKP. Serta pada aplikasi ini tersaji map yang 
 langsung menunjukan jalan polisi kepada lokasi korban meminta bantuan.
 
-# Tampilan Aplikasi Slametin Polisi App
+# Tampilan Aplikasi Slametin Polisi App :
 ## Menu Utama
 ![screenshot_20180201-192400](https://user-images.githubusercontent.com/31888923/36708766-29a41ce6-1ba7-11e8-8d08-192b29a7ad5d.png)
 
@@ -38,5 +38,13 @@ langsung menunjukan jalan polisi kepada lokasi korban meminta bantuan.
 ## Map Menuju lokasi TKP Korban
 ![img-20180201-wa0008](https://user-images.githubusercontent.com/31888923/36709273-9c238124-1ba9-11e8-91f5-eeeaf9102d21.jpg)
 
+# Created By :
+Ade Guntur Ramadhan
+Android Developer
 
+# More Info :
+Follow My instagram : ade.guntur (https://www.instagram.com/ade.guntur)
+Add My Facebook : Ade Guntur Ramadhan (https://www.facebook.com/ade.guntur.9)
+Add My Linkedin : Ade Guntur Ramadhan (https://www.linkedin.com/in/ade-guntur-ramadhan-a99bb0157)
+And Don't Forget Follow My Github (https://github.com/adeguntur123)
 
