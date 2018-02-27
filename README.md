@@ -6,8 +6,6 @@ dalam bahaya kepada Handphone polisi,bukan mengirim sinyal kepada operator lalu 
 langsung menunjukan jalan polisi kepada lokasi korban meminta bantuan.
 
 # Tampilan Aplikasi Slametin Polisi App :
-berikut ini adalah tampilan aplikasi slametin secara lengkap.
-
 ### Menu Utama
 <img src="https://user-images.githubusercontent.com/31888923/36708766-29a41ce6-1ba7-11e8-8d08-192b29a7ad5d.png" width="256">
 
