@@ -39,12 +39,12 @@ langsung menunjukan jalan polisi kepada lokasi korban meminta bantuan.
 ![img-20180201-wa0008](https://user-images.githubusercontent.com/31888923/36709273-9c238124-1ba9-11e8-91f5-eeeaf9102d21.jpg)
 
 # Created By :
-Ade Guntur Ramadhan
-Android Developer
+* Ade Guntur Ramadhan
+* Android Developer
 
 # More Info :
-Follow My instagram : ade.guntur (https://www.instagram.com/ade.guntur)
-Add My Facebook : Ade Guntur Ramadhan (https://www.facebook.com/ade.guntur.9)
-Add My Linkedin : Ade Guntur Ramadhan (https://www.linkedin.com/in/ade-guntur-ramadhan-a99bb0157)
-And Don't Forget Follow My Github (https://github.com/adeguntur123)
+* Follow My instagram : ade.guntur (https://www.instagram.com/ade.guntur)
+* Add My Facebook : Ade Guntur Ramadhan (https://www.facebook.com/ade.guntur.9)
+* Add My Linkedin : Ade Guntur Ramadhan (https://www.linkedin.com/in/ade-guntur-ramadhan-a99bb0157)
+* And Don't Forget Follow My Github (https://github.com/adeguntur123)
 
