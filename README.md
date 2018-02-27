@@ -35,8 +35,7 @@ berikut ini adalah tampilan aplikasi slametin secara lengkap.
 <img src="https://user-images.githubusercontent.com/31888923/36709194-33a2ddb6-1ba9-11e8-8951-011160c3810c.png" width="256">
 
 ## Notifikasi Meminta Bantuan dari korban
-<img src="https://user-images.githubusercontent.com/31888923/36709068-9a5ecdc2-1ba8-11e8-9c7e-68c2ff0a2b4a.png" width="256">
-![img-20180201-wa0009](https://user-images.githubusercontent.com/31888923/36709161-080c106e-1ba9-11e8-83bc-7b7e50fd9244.jpg width="256")
+<img src="https://user-images.githubusercontent.com/31888923/36709161-080c106e-1ba9-11e8-83bc-7b7e50fd9244.jpg" width="256">
 
 ## Map Menuju lokasi TKP Korban
 <img src="https://user-images.githubusercontent.com/31888923/36709273-9c238124-1ba9-11e8-91f5-eeeaf9102d21.jpg" width="256">
