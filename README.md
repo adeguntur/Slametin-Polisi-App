@@ -8,36 +8,36 @@ langsung menunjukan jalan polisi kepada lokasi korban meminta bantuan.
 # Tampilan Aplikasi Slametin Polisi App :
 berikut ini adalah tampilan aplikasi slametin secara lengkap.
 ## Menu Utama
-![screenshot_20180201-192400](https://user-images.githubusercontent.com/31888923/36708766-29a41ce6-1ba7-11e8-8d08-192b29a7ad5d.png)
+![screenshot_20180201-192400](https://user-images.githubusercontent.com/31888923/36708766-29a41ce6-1ba7-11e8-8d08-192b29a7ad5d.png width="256")
 
 ## Menu Register Untuk Pihak Kepolisian
-![pak pol 2](https://user-images.githubusercontent.com/31888923/36708918-f7fc1c10-1ba7-11e8-835a-f0be6223041e.png)
-![pak pol 1](https://user-images.githubusercontent.com/31888923/36708946-0fafdbf8-1ba8-11e8-9198-0a4b72e15a92.png)
+![pak pol 2](https://user-images.githubusercontent.com/31888923/36708918-f7fc1c10-1ba7-11e8-835a-f0be6223041e.png width="256")
+![pak pol 1](https://user-images.githubusercontent.com/31888923/36708946-0fafdbf8-1ba8-11e8-9198-0a4b72e15a92.png width="256")
 
 ## Menu Sign In
-![screenshot_20180201-192407](https://user-images.githubusercontent.com/31888923/36708965-2d420d44-1ba8-11e8-86d6-4e254e63d0e1.png)
+![screenshot_20180201-192407](https://user-images.githubusercontent.com/31888923/36708965-2d420d44-1ba8-11e8-86d6-4e254e63d0e1.png width="256")
 
 ## Menu Map Untuk Pihak Kepolisian
-![screenshot_20180201-192450](https://user-images.githubusercontent.com/31888923/36709011-57031ca4-1ba8-11e8-9cfa-daf4f9aee075.png)
-![screenshot_20180201-192454](https://user-images.githubusercontent.com/31888923/36709053-82ec8346-1ba8-11e8-82e5-33eb207196f3.png)
+![screenshot_20180201-192450](https://user-images.githubusercontent.com/31888923/36709011-57031ca4-1ba8-11e8-9cfa-daf4f9aee075.png width="256")
+![screenshot_20180201-192454](https://user-images.githubusercontent.com/31888923/36709053-82ec8346-1ba8-11e8-82e5-33eb207196f3.png width="256") 
 
 ## Menu Profil
-![screenshot_20180201-192457](https://user-images.githubusercontent.com/31888923/36709068-9a5ecdc2-1ba8-11e8-9c7e-68c2ff0a2b4a.png)
+![screenshot_20180201-192457](https://user-images.githubusercontent.com/31888923/36709068-9a5ecdc2-1ba8-11e8-9c7e-68c2ff0a2b4a.png width="256")
 
 ## Menu Lupa Password
-![screenshot_20180201-192422](https://user-images.githubusercontent.com/31888923/36709083-b523a664-1ba8-11e8-93cc-015cd87c54b1.png)
+![screenshot_20180201-192422](https://user-images.githubusercontent.com/31888923/36709083-b523a664-1ba8-11e8-93cc-015cd87c54b1.png width="256")
 
 ## Menu Update Password
-![up1](https://user-images.githubusercontent.com/31888923/36709186-2b2627f6-1ba9-11e8-953e-8c6dc7ac8ea6.png)
+![up1](https://user-images.githubusercontent.com/31888923/36709186-2b2627f6-1ba9-11e8-953e-8c6dc7ac8ea6.png width="256")
 
 ## Menu Update Data 
-![up2](https://user-images.githubusercontent.com/31888923/36709194-33a2ddb6-1ba9-11e8-8951-011160c3810c.png)
+![up2](https://user-images.githubusercontent.com/31888923/36709194-33a2ddb6-1ba9-11e8-8951-011160c3810c.png width="256" )
 
 ## Notifikasi Meminta Bantuan dari korban
-![img-20180201-wa0009](https://user-images.githubusercontent.com/31888923/36709161-080c106e-1ba9-11e8-83bc-7b7e50fd9244.jpg)
+![img-20180201-wa0009](https://user-images.githubusercontent.com/31888923/36709161-080c106e-1ba9-11e8-83bc-7b7e50fd9244.jpg width="256")
 
 ## Map Menuju lokasi TKP Korban
-![img-20180201-wa0008](https://user-images.githubusercontent.com/31888923/36709273-9c238124-1ba9-11e8-91f5-eeeaf9102d21.jpg)
+![img-20180201-wa0008](https://user-images.githubusercontent.com/31888923/36709273-9c238124-1ba9-11e8-91f5-eeeaf9102d21.jpg width="256")
 
 # Created By :
 * Ade Guntur Ramadhan
