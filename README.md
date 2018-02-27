@@ -12,8 +12,8 @@ berikut ini adalah tampilan aplikasi slametin secara lengkap.
 <img src="https://user-images.githubusercontent.com/31888923/36708766-29a41ce6-1ba7-11e8-8d08-192b29a7ad5d.png" width="256" height="256">
 
 ## Menu Register Untuk Pihak Kepolisian
-<img src="https://user-images.githubusercontent.com/31888923/36708918-f7fc1c10-1ba7-11e8-835a-f0be6223041e.png" width="256" height="256">
-<img src="https://user-images.githubusercontent.com/31888923/36708946-0fafdbf8-1ba8-11e8-9198-0a4b72e15a92.png" width="256">&nbsp;&nbsp;&nbsp;
+<img src="https://user-images.githubusercontent.com/31888923/36708918-f7fc1c10-1ba7-11e8-835a-f0be6223041e.png" width="256" >&nbsp;&nbsp;&nbsp;
+<img src="https://user-images.githubusercontent.com/31888923/36708946-0fafdbf8-1ba8-11e8-9198-0a4b72e15a92.png" width="256">
 
 ## Menu Sign In
 ![screenshot_20180201-192407](https://user-images.githubusercontent.com/31888923/36708965-2d420d44-1ba8-11e8-86d6-4e254e63d0e1.png width="256")
