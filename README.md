@@ -6,7 +6,7 @@ dalam bahaya kepada Handphone polisi,bukan mengirim sinyal kepada operator lalu 
 langsung menunjukan jalan polisi kepada lokasi korban meminta bantuan.
 
 # Tampilan Aplikasi Slametin Polisi App
-##Menu Utama
+## Menu Utama
 ![screenshot_20180201-192400](https://user-images.githubusercontent.com/31888923/36708766-29a41ce6-1ba7-11e8-8d08-192b29a7ad5d.png)
 
 ## Menu Register Untuk Pihak Kepolisian
